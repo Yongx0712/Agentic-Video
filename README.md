@@ -185,9 +185,3 @@ uv run playwright install --with-deps chromium
 
 
 中文说明与请求体示例见：`**docs/zh/reference/api-overview.md`**、`**docs/zh/user-guide/api.md**`。
-
----
-
-## 📝 许可证
-
-本项目采用 **Apache License 2.0**，见仓库根目录 `LICENSE`。
