@@ -1,0 +1,56 @@
+{
+  "format": "pixelle-digital-human-chain-v1",
+  "title": "数字人口播：云端生成 + 本地成片增强（字幕/特效/画中画/高亮/音效）",
+  "description": "前段节点为你项目中已有的 RunningHub / Comfy 工作流（未修改）。生成得到 final.mp4 后，由 Web 界面自动追加本地增强链；本 JSON 用于对照「节点顺序」与导入备份，不是 ComfyUI 画布导出的 graph。",
+  "upstream_comfy_nodes": [
+    {
+      "step": 1,
+      "name": "拼图与文案 / 形象合成",
+      "workflow_files": [
+        "workflows/runninghub/digital_image.json",
+        "workflows/runninghub/digital_customize.json"
+      ],
+      "note": "按你在界面里选的「带货 / 自定义」模式调用其一；逻辑未改。"
+    },
+    {
+      "step": 2,
+      "name": "数字人视频合成",
+      "workflow_files": [
+        "workflows/runninghub/digital_combination.json"
+      ],
+      "inputs_mapping": {
+        "videoimage": "上一步输出的合成图 URL 或路径",
+        "audio": "本地 TTS 生成的 narration.mp3"
+      },
+      "output": "云端返回的视频 URL → 下载为 output/<任务目录>/final.mp4"
+    }
+  ],
+  "post_chain_local": {
+    "runner": "pixelle_video.postprocess.digital_human_post.enhance_digital_human_video_safe",
+    "trigger": "web/pipelines/digital_human.py 在下载 final.mp4 之后 await _finalize_digital_human_post(...)",
+    "output_video": "output/<任务目录>/final_enhanced.mp4",
+    "preset_behavior": {
+      "subtitles": "faster-whisper 对齐口语音频生成字幕；失败则整段字幕兜底",
+      "style": "ASS：微软雅黑粗体、描边、阴影、底部对齐、MarginV≈12% 画面高度（减少遮挡数字人区域）",
+      "keyword_highlight": "从口播文案中提取关键词（含引号内短语、较长词），在字幕中黄色放大加粗",
+      "pip": "可选：右上角画中画，宽度约主画面 22%，循环短视频直至主片结束",
+      "sfx": "内置短促「叮」声：片头附近、中段、以及包含关键词的字幕段起始（最多约 5 次）"
+    },
+    "environment_overrides": {
+      "PIXELLE_WHISPER_MODEL": "默认 tiny（省时间）；要更准确可设 base 或 small",
+      "PIXELLE_WHISPER_DEVICE": "cuda +（可选）PIXELLE_WHISPER_COMPUTE=float16 可再快",
+      "PIXELLE_WHISPER_LANG": "留空自动识别；可设 zh",
+      "PIXELLE_WHISPER_BEAM_SIZE": "默认 1（快）；改 5 略准但更慢",
+      "PIXELLE_POST_X264_PRESET": "默认 ultrafast；要画质用 slow + 把 CRF 调低",
+      "PIXELLE_POST_X264_CRF": "默认 23（快）；18～20 更清晰但更慢",
+      "HF_ENDPOINT": "默认同 PIXELLE：未设置时用 https://hf-mirror.com 下载模型；要官方站设 PIXELLE_HF_OFFICIAL=1",
+      "PIXELLE_WHISPER_DOWNLOAD_ROOT": "可选：指定模型缓存目录",
+      "PIXELLE_WHISPER_LOCAL_ONLY": "1 则只使用本地已缓存模型，不联网"
+    }
+  },
+  "web_ui_controls": {
+    "section_i18n_key": "digital_human.post.section",
+    "toggle_default_on": true,
+    "optional_pip_upload": true
+  }
+}
