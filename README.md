@@ -122,8 +122,6 @@ uv run playwright install --with-deps chromium
 4. 🎵 **BGM**：内置或把音频放入 `bgm/` 后在界面选择。
 5. 📚 **历史**：使用 Web 的 History 页面查看任务历史（若已启用持久化）。
 
-更细步骤见：`docs/zh/getting-started/quick-start.md`、`docs/zh/user-guide/web-ui.md`。
-
 ---
 
 ## ⚙️ 核心实现
@@ -134,7 +132,6 @@ uv run playwright install --with-deps chromium
 - 🎬 **帧与成片**：`FrameHtmlService`（`frame_html.py`）使用 **Playwright** 将模板 HTML 渲染为图像序列或中间产物；**VideoService** 与 **MoviePy/ffmpeg** 负责时间轴、拼接与混音。
 - 🖥️ **Web 层**：`web/app.py` 聚合页面；各 `web/pipelines/*.py` 将扩展场景接到同一套配置与进度 UI。
 
-架构总览还可参考：`docs/zh/development/architecture.md`。
 
 ---
 
@@ -183,5 +180,3 @@ uv run playwright install --with-deps chromium
 | POST   | `/frame/render`              | 🖥️ 渲染单帧                |
 | GET    | `/frame/template/params`     | 🎛️ 查询模板可调参数            |
 
-
-中文说明与请求体示例见：`**docs/zh/reference/api-overview.md`**、`**docs/zh/user-guide/api.md**`。
